@@ -6,21 +6,28 @@
 */
 
 use std::fmt::Display;
+use std::marker::Copy; // we want to be able to return copies of objects
 
-// We implement Stack for displayable items
-pub struct Stack<T: Display> {
+// We implement Stack for displayable and copy-able items
+pub struct Stack<T: Display + Copy> {
     // The top of the stack is the last item in contents
     size: usize,
     contents: Vec<T>,
 }
 
-impl<T: Display> Stack<T> {
+impl<T: Display + Copy> Stack<T> {
     // Constructor of Objects of type Stack.
     pub fn new() -> Self {
         Self {
             size: 0,
             contents: Vec::new(),
         }
+    }
+
+    // Returns the top element of the Stack
+    pub fn top(&self) -> T {
+        assert!(!self.empty());
+        self.contents[self.size - 1]
     }
 
     // Pushes an item onto the top of the Stack
@@ -33,6 +40,8 @@ impl<T: Display> Stack<T> {
     pub fn pop(&mut self) -> T {
         assert!(!self.empty());
         self.size -= 1;
+
+        // deletes the top and returns the top
         self.contents.pop().unwrap()
     }
 
@@ -71,34 +80,13 @@ impl<T: Display> Stack<T> {
 }
 
 fn main() {
-    println!("------------Test 1------------");
+    println!("------------Test 1-------------");
     let mut test1: Stack<&str> = Stack::new();
-    test1.push("World!");
-    test1.push(", ");
-    test1.push("Hello");
+    //println!("{}", test1.top());
+    test1.push("1");
+    println!("Top: (Should be 1) {}", test1.top());
+    test1.push("2");
+    test1.push("3");
     test1.print();
-    println!("Size: {}", test1.size());
-    println!("Empty?: {}", if test1.empty() { "Yes!" } else { "No!" });
-    test1.clear();
-    println!("Cleared");
-    test1.push("World!");
-    test1.push(", ");
-    test1.push("Hello");
-    print!("{}", test1.pop());
-    print!("{}", test1.pop());
-    println!("{}", test1.pop());
-
-    println!("------------Test 2------------");
-
-    let mut test2: Stack<u32> = Stack::new();
-
-    print!("Test 2 is empty (T/F): {}", test2.empty());
-    for i in 0..15 {
-        test2.push(i);
-        test2.print();
-    }
-    for _j in 0..15 {
-        test2.pop();
-        test2.print();
-    }
+    println!("Size: (Should be 3) {}", test1.size());
 }
